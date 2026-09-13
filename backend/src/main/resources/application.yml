@@ -3,12 +3,24 @@ server:
 
 spring:
   datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:h2:mem:app;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}"
+    url: "${SPRING_DATASOURCE_URL:jdbc:h2:mem:app;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000}"
     driver-class-name: "${SPRING_DATASOURCE_DRIVER:org.h2.Driver}"
     username: "${DB_USER:sa}"
     password: "${DB_PASSWORD:}"
-  jpa:
-    database-platform: "${SPRING_JPA_DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}"
-    hibernate:
-      ddl-auto: none
-    open-in-view: false
+  sql:
+    init:
+      # 内嵌 H2（本地/测试）启动时自动建表并灌入演示数据；生产使用 PostgreSQL，由 database/init.sql 初始化
+      mode: embedded
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 10
+
+logging:
+  level:
+    com.generated.ldmurdergame: info

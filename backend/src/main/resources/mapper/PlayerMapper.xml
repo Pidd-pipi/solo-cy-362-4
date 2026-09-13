@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.generated.ldmurdergame.mapper.PlayerMapper">
+
+  <resultMap id="playerMap" type="com.generated.ldmurdergame.entity.Player">
+    <id property="id" column="id" />
+    <result property="name" column="name" />
+    <result property="phone" column="phone" />
+    <result property="memberLevel" column="member_level" />
+    <result property="createdAt" column="created_at" />
+  </resultMap>
+
+  <select id="selectAll" resultMap="playerMap">
+    SELECT id, name, phone, member_level, created_at
+    FROM players
+    ORDER BY id
+  </select>
+
+  <select id="selectById" resultMap="playerMap">
+    SELECT id, name, phone, member_level, created_at
+    FROM players
+    WHERE id = #{id}
+  </select>
+
+  <select id="selectByPhone" resultMap="playerMap">
+    SELECT id, name, phone, member_level, created_at
+    FROM players
+    WHERE phone = #{phone}
+  </select>
+
+  <insert id="insert" parameterType="com.generated.ldmurdergame.entity.Player"
+      useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO players (name, phone, member_level, created_at)
+    VALUES (#{name}, #{phone}, COALESCE(#{memberLevel}, '青铜'), #{createdAt})
+  </insert>
+</mapper>

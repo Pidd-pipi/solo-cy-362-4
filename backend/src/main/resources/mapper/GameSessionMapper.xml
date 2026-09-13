@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.generated.ldmurdergame.mapper.GameSessionMapper">
+
+  <resultMap id="sessionMap" type="com.generated.ldmurdergame.entity.GameSession">
+    <id property="id" column="id" />
+    <result property="scriptId" column="script_id" />
+    <result property="dmName" column="dm_name" />
+    <result property="startTime" column="start_time" />
+    <result property="capacity" column="capacity" />
+    <result property="status" column="status" />
+    <result property="createdAt" column="created_at" />
+    <result property="scriptName" column="script_name" />
+    <result property="genre" column="genre" />
+    <result property="registeredCount" column="registered_count" />
+    <result property="waitlistCount" column="waitlist_count" />
+  </resultMap>
+
+  <sql id="detailColumns">
+    s.id, s.script_id, s.dm_name, s.start_time, s.capacity, s.status, s.created_at,
+    sc.name AS script_name, sc.genre AS genre,
+    (SELECT COUNT(*) FROM registrations r
+      WHERE r.session_id = s.id AND r.status = 'REGISTERED') AS registered_count,
+    (SELECT COUNT(*) FROM registrations r
+      WHERE r.session_id = s.id AND r.status = 'WAITLISTED') AS waitlist_count
+  </sql>
+
+  <insert id="insert" parameterType="com.generated.ldmurdergame.entity.GameSession"
+      useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO sessions (script_id, dm_name, start_time, capacity, status, created_at)
+    VALUES (#{scriptId}, #{dmName}, #{startTime}, #{capacity},
+            COALESCE(#{status}, 'SCHEDULED'), #{createdAt})
+  </insert>
+
+  <select id="selectByIdForUpdate" resultMap="sessionMap">
+    SELECT id, script_id, dm_name, start_time, capacity, status, created_at
+    FROM sessions
+    WHERE id = #{id}
+    FOR UPDATE
+  </select>
+
+  <select id="selectDetailById" resultMap="sessionMap">
+    SELECT <include refid="detailColumns" />
+    FROM sessions s
+    JOIN scripts sc ON sc.id = s.script_id
+    WHERE s.id = #{id}
+  </select>
+
+  <select id="selectList" resultMap="sessionMap">
+    SELECT <include refid="detailColumns" />
+    FROM sessions s
+    JOIN scripts sc ON sc.id = s.script_id
+    <where>
+      <if test="status != null">
+        s.status = #{status}
+      </if>
+    </where>
+    ORDER BY s.start_time
+  </select>
+
+  <update id="updateStatus">
+    UPDATE sessions
+    SET status = #{status}
+    WHERE id = #{id}
+  </update>
+</mapper>

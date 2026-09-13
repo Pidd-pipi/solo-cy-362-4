@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.generated.ldmurdergame.mapper.ScriptMapper">
+
+  <resultMap id="scriptMap" type="com.generated.ldmurdergame.entity.Script">
+    <id property="id" column="id" />
+    <result property="name" column="name" />
+    <result property="genre" column="genre" />
+    <result property="difficulty" column="difficulty" />
+    <result property="durationMinutes" column="duration_minutes" />
+    <result property="minPlayers" column="min_players" />
+    <result property="maxPlayers" column="max_players" />
+    <result property="dmRequired" column="dm_required" />
+    <result property="description" column="description" />
+    <result property="createdAt" column="created_at" />
+  </resultMap>
+
+  <select id="selectAll" resultMap="scriptMap">
+    SELECT id, name, genre, difficulty, duration_minutes, min_players, max_players,
+           dm_required, description, created_at
+    FROM scripts
+    ORDER BY id
+  </select>
+
+  <select id="selectById" resultMap="scriptMap">
+    SELECT id, name, genre, difficulty, duration_minutes, min_players, max_players,
+           dm_required, description, created_at
+    FROM scripts
+    WHERE id = #{id}
+  </select>
+
+  <insert id="insert" parameterType="com.generated.ldmurdergame.entity.Script"
+      useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO scripts (name, genre, difficulty, duration_minutes, min_players,
+                         max_players, dm_required, description, created_at)
+    VALUES (#{name}, #{genre}, #{difficulty}, #{durationMinutes}, #{minPlayers},
+            #{maxPlayers}, #{dmRequired}, #{description}, #{createdAt})
+  </insert>
+</mapper>
